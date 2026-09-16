@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So sánh khả năng phân li trong nước của HCl và CH₃COOH</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .beaker-container {
+            position: relative;
+            width: 150px;
+            height: 200px;
+            border: 4px solid #cbd5e1;
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background-color: rgba(186, 230, 253, 0.4);
+            border-top: 2px solid rgba(125, 211, 252, 0.6);
+            transition: height 0.5s ease;
+        }
+
+        .electrode {
+            position: absolute;
+            width: 8px;
+            height: 120px;
+            background-color: #475569;
+            top: -20px;
+            border-radius: 4px;
+        }
+        
+        .electrode.left { left: 40px; }
+        .electrode.right { right: 40px; }
+
+        .wire {
+            position: absolute;
+            width: 2px;
+            background-color: #ef4444;
+            z-index: 10;
+        }
+
+        .bulb-container {
+            position: absolute;
+            top: -90px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .bulb {
+            width: 40px;
+            height: 40px;
+            background-color: #e5e7eb;
+            border-radius: 50%;
+            border: 2px solid #9ca3af;
+            position: relative;
+            transition: all 0.5s ease;
+            box-shadow: 0 0 0 transparent;
+        }
+
+        .bulb-base {
+            width: 20px;
+            height: 15px;
+            background-color: #6b7280;
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* Glowing states */
+        .bulb.glow-bright {
+            background-color: #fef08a;
+            border-color: #eab308;
+            box-shadow: 0 0 30px 10px rgba(234, 179, 8, 0.6);
+        }
+
+        .bulb.glow-dim {
+            background-color: #fef9c3;
+            border-color: #fde047;
+            box-shadow: 0 0 10px 2px rgba(234, 179, 8, 0.3);
+        }
+
+        .ion {
+            position: absolute;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .ion.active {
+            opacity: 1;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .ion-pos { background-color: #ef4444; width: 20px; height: 20px; }
+        .ion-neg { background-color: #3b82f6; width: 20px; height: 20px; }
+        
+        .molecule { 
+            background-color: #8b5cf6; 
+            width: 30px; 
+            height: 20px; 
+            border-radius: 10px;
+            font-size: 9px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); }
+            33% { transform: translateY(-5px) translateX(3px); }
+            66% { transform: translateY(3px) translateX(-3px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+
+        .answer-box {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s ease-out;
+            opacity: 0;
+        }
+        
+        .answer-box.visible {
+            max-height: 300px; /* Arbitrary large height to accommodate text */
+            opacity: 1;
+            padding: 1rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8 flex flex-col items-center">
+
+<div class="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+    
+    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-white text-center">
+        <h1 class="text-3xl font-extrabold mb-1">So sánh khả năng phân li trong nước của HCl và CH₃COOH</h1>
+        <h2 class="text-[15px] font-medium text-indigo-100 opacity-90 mt-2">Thiết kế: Giáo viên Nguyễn Mạnh Hưng - Trường THPT Trại Cau</h2>
+    </div>
+
+    <div class="p-6">
+        
+        <!-- Context from image -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg mb-8 text-gray-700">
+            <p>Kết quả thử tính dẫn điện với dung dịch <strong>HCl 0,1 M</strong> và dung dịch <strong>CH₃COOH 0,1 M</strong> cho thấy trường hợp cốc đựng dung dịch <strong>HCl 0,1 M bóng đèn sáng hơn</strong>.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-8 mt-8">
+            
+            <!-- Setup 1: HCl -->
+            <div class="flex flex-col items-center">
+                <div class="relative w-[200px] h-[400px]">
+                    <!-- Battery -->
+                    <div class="absolute top-0 left-[50px] w-[100px] h-[36px] bg-gray-800 rounded-md border-2 border-gray-600 flex justify-between items-center px-3 text-white z-20 shadow-md">
+                        <span class="text-red-400 font-bold text-lg leading-none">+</span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-gray-300">Pin 9V</span>
+                        <span class="text-blue-400 font-bold text-lg leading-none">-</span>
+                    </div>
+                    
+                    <!-- Right Wire Path (+) -->
+                    <div class="absolute top-[34px] left-[149px] w-[2px] h-[40px] bg-red-500 z-10"></div>
+                    
+                    <!-- Bulb Container -->
+                    <div class="absolute top-[74px] left-[130px] w-[40px] flex flex-col items-center z-20">
+                        <div id="bulb-hcl" class="bulb"></div>
+                        <div class="bulb-base"></div>
+                    </div>
+                    
+                    <!-- Right Wire Path Continue -->
+                    <div class="absolute top-[129px] left-[149px] w-[2px] h-[81px] bg-red-500 z-10"></div>
+
+                    <!-- Left Wire Path (-) & Switch -->
+                    <div class="absolute top-[34px] left-[49px] w-[2px] h-[70px] bg-blue-500 z-10"></div>
+                    
+                    <div class="absolute top-[104px] left-[40px] w-[30px] h-[30px] z-20" title="Công tắc điện">
+                        <div class="absolute left-[5px] top-[0px] w-[8px] h-[8px] bg-gray-400 rounded-full border border-gray-600"></div>
+                        <div class="absolute left-[5px] top-[22px] w-[8px] h-[8px] bg-gray-400 rounded-full border border-gray-600"></div>
+                        <div class="switch-arm absolute left-[9px] top-[4px] w-[2px] h-[20px] bg-slate-700 origin-top rotate-[-45deg] transition-transform duration-300 z-30"></div>
+                    </div>
+                    
+                    <div class="absolute top-[130px] left-[49px] w-[2px] h-[80px] bg-blue-500 z-10"></div>
+
+                    <!-- Beaker -->
+                    <div id="beaker-hcl" class="beaker-container absolute bottom-0 left-[25px] !m-0 !w-[150px] !h-[190px]">
+                        <!-- Electrodes -->
+                        <div class="electrode absolute !left-[20px] !top-[-30px] bg-slate-600"></div>
+                        <div class="electrode absolute !right-[20px] !top-[-30px] bg-slate-600"></div>
+                        <div class="liquid">
+                            <!-- Ions injected here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <span class="font-bold text-lg text-indigo-800">Dung dịch HCl 0,1 M</span>
+                    <p class="text-sm text-gray-500">(Acid mạnh)</p>
+                </div>
+            </div>
+
+            <!-- Setup 2: CH3COOH -->
+            <div class="flex flex-col items-center">
+                <div class="relative w-[200px] h-[400px]">
+                    <!-- Battery -->
+                    <div class="absolute top-0 left-[50px] w-[100px] h-[36px] bg-gray-800 rounded-md border-2 border-gray-600 flex justify-between items-center px-3 text-white z-20 shadow-md">
+                        <span class="text-red-400 font-bold text-lg leading-none">+</span>
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-gray-300">Pin 9V</span>
+                        <span class="text-blue-400 font-bold text-lg leading-none">-</span>
+                    </div>
+                    
+                    <!-- Right Wire Path (+) -->
+                    <div class="absolute top-[34px] left-[149px] w-[2px] h-[40px] bg-red-500 z-10"></div>
+                    
+                    <!-- Bulb Container -->
+                    <div class="absolute top-[74px] left-[130px] w-[40px] flex flex-col items-center z-20">
+                        <div id="bulb-ch3cooh" class="bulb"></div>
+                        <div class="bulb-base"></div>
+                    </div>
+                    
+                    <!-- Right Wire Path Continue -->
+                    <div class="absolute top-[129px] left-[149px] w-[2px] h-[81px] bg-red-500 z-10"></div>
+
+                    <!-- Left Wire Path (-) & Switch -->
+                    <div class="absolute top-[34px] left-[49px] w-[2px] h-[70px] bg-blue-500 z-10"></div>
+                    
+                    <div class="absolute top-[104px] left-[40px] w-[30px] h-[30px] z-20" title="Công tắc điện">
+                        <div class="absolute left-[5px] top-[0px] w-[8px] h-[8px] bg-gray-400 rounded-full border border-gray-600"></div>
+                        <div class="absolute left-[5px] top-[22px] w-[8px] h-[8px] bg-gray-400 rounded-full border border-gray-600"></div>
+                        <div class="switch-arm absolute left-[9px] top-[4px] w-[2px] h-[20px] bg-slate-700 origin-top rotate-[-45deg] transition-transform duration-300 z-30"></div>
+                    </div>
+                    
+                    <div class="absolute top-[130px] left-[49px] w-[2px] h-[80px] bg-blue-500 z-10"></div>
+
+                    <!-- Beaker -->
+                    <div id="beaker-ch3cooh" class="beaker-container absolute bottom-0 left-[25px] !m-0 !w-[150px] !h-[190px]">
+                        <!-- Electrodes -->
+                        <div class="electrode absolute !left-[20px] !top-[-30px] bg-slate-600"></div>
+                        <div class="electrode absolute !right-[20px] !top-[-30px] bg-slate-600"></div>
+                        <div class="liquid">
+                            <!-- Ions injected here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-center">
+                    <span class="font-bold text-lg text-purple-800">Dung dịch CH₃COOH 0,1 M</span>
+                    <p class="text-sm text-gray-500">(Acid yếu)</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="flex justify-center mb-8">
+            <button id="btn-toggle" class="px-8 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-full shadow-lg transition-colors flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span id="btn-text">Đóng mạch điện</span>
+            </button>
+        </div>
+
+        <div class="bg-purple-50 rounded-xl border border-purple-200 overflow-hidden">
+            <div class="p-4 border-b border-purple-200">
+                <h3 class="font-bold text-purple-900 mb-2 italic">Thực hiện yêu cầu sau:</h3>
+                <p class="text-gray-800 text-lg font-medium">Hãy so sánh số ion mang điện trong hai dung dịch trên, từ đó cho biết acid nào phân li mạnh hơn.</p>
+            </div>
+            
+            <div class="p-4 bg-white flex justify-center">
+                <button id="btn-reveal" class="px-6 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 font-semibold rounded border border-purple-300 transition-colors">
+                    Hiển thị câu trả lời
+                </button>
+            </div>
+            
+            <div id="answer-section" class="answer-box bg-green-50 border-t border-green-200 text-green-900">
+                <div class="flex gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div>
+                        <h4 class="font-bold text-lg mb-2 text-green-800">Trả lời:</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Bóng đèn ở cốc đựng dung dịch HCl 0,1 M sáng hơn, chứng tỏ dung dịch HCl dẫn điện tốt hơn dung dịch CH₃COOH 0,1 M.</li>
+                            <li>Khả năng dẫn điện của dung dịch phụ thuộc vào nồng độ ion. Do đó, <strong>số lượng ion mang điện trong dung dịch HCl nhiều hơn</strong> so với trong dung dịch CH₃COOH có cùng nồng độ.</li>
+                            <li><strong>Kết luận:</strong> HCl phân li ra ion nhiều hơn, do đó <strong>HCl phân li mạnh hơn</strong> CH₃COOH. (HCl là acid mạnh phân li hoàn toàn, CH₃COOH là acid yếu phân li một phần).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnToggle = document.getElementById('btn-toggle');
+        const btnText = document.getElementById('btn-text');
+        const bulbHcl = document.getElementById('bulb-hcl');
+        const bulbCh3cooh = document.getElementById('bulb-ch3cooh');
+        const beakerHcl = document.querySelector('#beaker-hcl .liquid');
+        const beakerCh3cooh = document.querySelector('#beaker-ch3cooh .liquid');
+        
+        const btnReveal = document.getElementById('btn-reveal');
+        const answerSection = document.getElementById('answer-section');
+
+        let isCircuitClosed = false;
+
+        function createIons() {
+            // Clear existing
+            beakerHcl.innerHTML = '';
+            beakerCh3cooh.innerHTML = '';
+
+            // HCl: Strong acid, fully dissociated (many ions, no molecules)
+            for (let i = 0; i < 15; i++) {
+                // H+ ions
+                let hIon = document.createElement('div');
+                hIon.className = 'ion ion-pos hcl-ion';
+                hIon.innerText = 'H⁺';
+                hIon.style.left = `${10 + Math.random() * 80}%`;
+                hIon.style.top = `${10 + Math.random() * 70}%`;
+                hIon.style.animationDelay = `${Math.random() * 2}s`;
+                beakerHcl.appendChild(hIon);
+
+                // Cl- ions
+                let clIon = document.createElement('div');
+                clIon.className = 'ion ion-neg hcl-ion';
+                clIon.innerText = 'Cl⁻';
+                clIon.style.left = `${10 + Math.random() * 80}%`;
+                clIon.style.top = `${10 + Math.random() * 70}%`;
+                clIon.style.animationDelay = `${Math.random() * 2}s`;
+                beakerHcl.appendChild(clIon);
+            }
+
+            // CH3COOH: Weak acid, partially dissociated (few ions, many molecules)
+            // Few ions
+            for (let i = 0; i < 3; i++) {
+                let hIon = document.createElement('div');
+                hIon.className = 'ion ion-pos ch3cooh-ion';
+                hIon.innerText = 'H⁺';
+                hIon.style.left = `${10 + Math.random() * 80}%`;
+                hIon.style.top = `${10 + Math.random() * 70}%`;
+                hIon.style.animationDelay = `${Math.random() * 2}s`;
+                beakerCh3cooh.appendChild(hIon);
+
+                let acIon = document.createElement('div');
+                acIon.className = 'ion ion-neg ch3cooh-ion';
+                acIon.innerHTML = 'CH₃<br>COO⁻';
+                acIon.style.fontSize = '7px';
+                acIon.style.left = `${10 + Math.random() * 80}%`;
+                acIon.style.top = `${10 + Math.random() * 70}%`;
+                acIon.style.animationDelay = `${Math.random() * 2}s`;
+                beakerCh3cooh.appendChild(acIon);
+            }
+            
+            // Many molecules
+            for (let i = 0; i < 12; i++) {
+                let mol = document.createElement('div');
+                mol.className = 'ion molecule ch3cooh-ion';
+                mol.innerText = 'CH₃COOH';
+                mol.style.left = `${5 + Math.random() * 70}%`;
+                mol.style.top = `${10 + Math.random() * 70}%`;
+                mol.style.animationDelay = `${Math.random() * 2}s`;
+                beakerCh3cooh.appendChild(mol);
+            }
+        }
+
+        createIons(); // Initial generation
+
+        const switchArms = document.querySelectorAll('.switch-arm');
+
+        btnToggle.addEventListener('click', () => {
+            isCircuitClosed = !isCircuitClosed;
+            const allIons = document.querySelectorAll('.ion');
+
+            if (isCircuitClosed) {
+                // Turn on
+                btnToggle.classList.replace('bg-red-500', 'bg-green-500');
+                btnToggle.classList.replace('hover:bg-red-600', 'hover:bg-green-600');
+                btnText.innerText = "Ngắt mạch điện";
+                
+                bulbHcl.classList.add('glow-bright');
+                bulbCh3cooh.classList.add('glow-dim');
+                
+                // Animate switch closing
+                switchArms.forEach(arm => arm.classList.replace('rotate-[-45deg]', 'rotate-0'));
+
+                allIons.forEach(ion => ion.classList.add('active'));
+
+            } else {
+                // Turn off
+                btnToggle.classList.replace('bg-green-500', 'bg-red-500');
+                btnToggle.classList.replace('hover:bg-green-600', 'hover:bg-red-600');
+                btnText.innerText = "Đóng mạch điện";
+                
+                bulbHcl.classList.remove('glow-bright');
+                bulbCh3cooh.classList.remove('glow-dim');
+                
+                // Animate switch opening
+                switchArms.forEach(arm => arm.classList.replace('rotate-0', 'rotate-[-45deg]'));
+
+                allIons.forEach(ion => ion.classList.remove('active'));
+            }
+        });
+
+        // Answer Reveal Logic
+        btnReveal.addEventListener('click', () => {
+            if (answerSection.classList.contains('visible')) {
+                answerSection.classList.remove('visible');
+                btnReveal.innerText = "Hiển thị câu trả lời";
+                btnReveal.classList.replace('bg-gray-200', 'bg-purple-100');
+                btnReveal.classList.replace('text-gray-700', 'text-purple-700');
+            } else {
+                answerSection.classList.add('visible');
+                btnReveal.innerText = "Ẩn câu trả lời";
+                btnReveal.classList.replace('bg-purple-100', 'bg-gray-200');
+                btnReveal.classList.replace('text-purple-700', 'text-gray-700');
+            }
+        });
+    });
+</script>
+</body>
+</html>
